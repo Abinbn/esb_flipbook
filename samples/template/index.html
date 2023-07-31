@@ -1,0 +1,137 @@
+<!doctype html>
+<!--[if lt IE 7 ]> <html lang="en" class="ie6"> <![endif]-->
+<!--[if IE 7 ]>    <html lang="en" class="ie7"> <![endif]-->
+<!--[if IE 8 ]>    <html lang="en" class="ie8"> <![endif]-->
+<!--[if IE 9 ]>    <html lang="en" class="ie9"> <![endif]-->
+<!--[if !IE]><!--> <html lang="en"> <!--<![endif]-->
+<head>
+  <meta name="viewport" content="width = 1050, user-scalable = no" />
+  <script type="text/javascript" src="../../extras/jquery.min.1.7.js"></script>
+  <script type="text/javascript" src="../../extras/modernizr.2.5.3.min.js"></script>
+
+<style>
+
+.pre {
+  position: fixed;
+  bottom: 20px;
+  right: 50%;
+  transform: translateX(50%);
+  padding: 10px 20px;
+  margin-right:10%;
+  background-color: #f1f1f1;
+  border: 1px solid #999;
+  border-radius: 5px;
+  font-size: 16px;
+  color: #333;
+  cursor: pointer;
+}
+
+.next {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 10px 20px;
+  margin-left:10%;
+  background-color: #f1f1f1;
+  border: 1px solid #999;
+  border-radius: 5px;
+  font-size: 16px;
+  color: #333;
+  cursor: pointer;
+}
+
+@media (max-width: 600px) {
+  button {
+    font-size: 14px;
+  }
+}
+
+
+</style>
+
+</head>
+<body>
+
+  <div class="flipbook-viewport">
+  <div class="container">
+    <div class="flipbook"></div>
+  </div>
+</div>
+
+<button id="prev-page" class="pre">Previous</button>
+<button id="next-page" class="next">Next</button>
+
+<script type="text/javascript">
+  function loadApp() {
+    var flipbook = $('.flipbook');
+
+    // Check if the CSS was already loaded
+    if (flipbook.width() == 0 || flipbook.height() == 0) {
+      setTimeout(loadApp, 10);
+      return;
+    }
+
+    $('.flipbook .double').scissor();
+
+    // Fetch all images from the "pages" folder
+    var images = [];
+    var folderPath = 'pages/';
+    var imageExtension = '.jpg';
+    var totalPages = 72; // Assuming there are 7 images in the folder
+
+    for (var i = 1; i <= totalPages; i++) {
+      var imageUrl = folderPath + i + imageExtension;
+      images.push('<div class="page" style="background-image:url(' + imageUrl + ')"></div>');
+    }
+
+    // Add the images to the flipbook
+    flipbook.html(images.join(''));
+
+    // Create the flipbook
+    var flipbookElement = $('.flipbook');
+    flipbookElement.turn({
+      // Elevation
+      elevation: 50,
+
+      // Enable gradients
+      gradients: true,
+
+      // Auto center this flipbook
+      autoCenter: true
+    });
+
+    // Add event listeners for keydown events
+    $(document).keydown(function (e) {
+      if (e.keyCode == 37) {
+        // Left arrow key
+        flipbookElement.turn('previous');
+      } else if (e.keyCode == 39) {
+        // Right arrow key
+        flipbookElement.turn('next');
+      }
+    });
+
+    // Add event listeners for button clicks
+    $('#prev-page').click(function () {
+      flipbookElement.turn('previous');
+    });
+
+    $('#next-page').click(function () {
+      flipbookElement.turn('next');
+    });
+  }
+
+  // Load the HTML4 version if there's not CSS transform
+  yepnope({
+    test: Modernizr.csstransforms,
+    yep: ['../../lib/turn.min.js'],
+    nope: ['../../lib/turn.html4.min.js'],
+    both: ['../../lib/scissor.min.js', 'css/double-page.css'],
+    complete: loadApp
+  });
+</script>
+
+
+</body>
+</html>
